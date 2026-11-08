@@ -1,0 +1,13 @@
+# The k8s-lab cluster. Create:  kind create cluster --config kind.yaml
+#                    Delete:  kind delete cluster --name k8s-lab
+#
+# Most of this only applies when the cluster is CREATED: after changing it, delete the cluster
+# and create it again.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: k8s-lab   # kubectl's context becomes kind-k8s-lab; the node container k8s-lab-control-plane
+nodes:
+  - role: control-plane
+    # Kubernetes v1.37.0, kind v0.33.0's default, pinned by digest (from kind's release notes)
+    # so a rebuild gets exactly the same node. Change it together with kubectl's version.
+    image: kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
