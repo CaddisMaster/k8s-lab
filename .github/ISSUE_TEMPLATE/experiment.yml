@@ -1,0 +1,46 @@
+name: Experiment
+description: Break something on purpose and record what happens
+labels: ["experiment"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Write the prediction before you run anything.** A wrong prediction is
+        the most useful result, and you only get it if it was written down first.
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: What do you want to find out?
+      placeholder: What happens to prober's results while status has no pods?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What you'll do
+      description: The exact commands, in order.
+      placeholder: |
+        1. kubectl config current-context   # must say kind-k8s-lab
+        2. kubectl delete pod -l app=status
+        3. kubectl get pods -w
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: prediction
+    attributes:
+      label: Prediction
+      description: What you expect to see, and why. Be specific enough to be wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What happened
+      description: Fill in afterwards, with the output that shows it.
+  - type: textarea
+    id: learned
+    attributes:
+      label: What it taught
+      description: Fill in afterwards. Where the prediction was wrong, why.
