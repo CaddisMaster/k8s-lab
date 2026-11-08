@@ -1,47 +1,84 @@
 # k8s-lab
 
-A learning project: an app built as small containerized services, run on Kubernetes. Sean's
-first hands-on microservices and Kubernetes work. The plan is [`docs/plan.md`](docs/plan.md):
-read it before doing anything.
+A learning project: an app built as small containerized services, run on Kubernetes. Sean's first
+hands-on microservices and Kubernetes work. The app is a monitor for his own sites (Phase 1),
+growing into a morning digest (Phase 2). Runs on a local **kind** cluster on the `jupiter` VM.
+Nothing here deploys anywhere.
 
-## Where it came from
-
-Sean wrote a note on his phone on 2026-11-07, the claude.ai doc
-[Explore: containerized microservices](https://claude.ai/artifact/BgaUCbCz8mfaTQvGR9Dxu5)
-(why, the monolith vs microservices trade-off, his questions). In an Orbit Ops session the same
-day he decided:
-
-- **Kubernetes from the start**, not Docker Compose first.
-- **A separate repo**, not part of Orbit Ops or Budget Buddy. Those are production apps with
-  strict workflows; this is where things get broken on purpose.
-- **The app:** a monitor for his own sites (Phase 1), growing into a morning digest (Phase 2).
-  He chose it over a textbook shop because he'd actually use it.
-
-Orbit Ops (the DevOps learning app in `../orbit-ops`) has a planned Kubernetes track with a
-"Cluster labs: kind & k3s" unit. What Sean learns here can feed that later; nothing here is
-part of Orbit Ops's code.
+> ⚠️ **This file is the always-loaded core and is kept small.** Detail lives in `docs/` and is
+> *not* loaded automatically. **Read the relevant file before acting.** The left column is the
+> action you are about to take, not a topic.
+>
+> | Before you… | Read |
+> |---|---|
+> | start a session: reconcile against `git log` / `gh issue list` | [`docs/status.md`](docs/status.md) |
+> | plan the next step, or a service's shape | [`docs/plan.md`](docs/plan.md) |
+> | change a manifest, a Dockerfile or a service | [`docs/gotchas.md`](docs/gotchas.md) |
+> | run anything against the cluster | the Non-negotiables below |
+> | want the reasoning behind a workflow rule | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ## Environment
 
-- Runs on the `jupiter` VM: Ubuntu, **arm64**, 8 cores, about 7 GB RAM (about 4 free), Docker 29.
-- **kind** (Kubernetes in Docker) is the cluster. Not k3s in LXD: no `/dev/kvm`, and LXD runs
-  heat up Sean's Mac. Not the droplet, ever: it's small and runs his production apps.
-- Real money is Sean's call, named up front. Everything here is meant to cost nothing.
-- Sean edits in VS Code over Remote-SSH; `../Jupiter.code-workspace` includes this repo.
+- The `jupiter` VM: Ubuntu, **arm64**, 8 cores, about 7 GB RAM (about 4 GB free), Docker 29.
+  Every binary and image must have an arm64 build.
+- **kind** (Kubernetes in Docker) is the cluster: each Kubernetes node is a Docker container.
+  Not k3s in LXD (no `/dev/kvm`), and never the droplet: it is small and runs production apps.
+- Everything here is meant to cost nothing. Real money is Sean's call, named up front.
+
+## Non-negotiables
+
+1. **`kubectl` only ever talks to the `kind-k8s-lab` context.** Check
+   `kubectl config current-context` before anything that changes the cluster. Breaking things is
+   the point here, so the one thing that must never happen is breaking the wrong thing.
+2. **No secret value is ever committed** (the repo is public). A Kubernetes Secret is created from
+   the command line or from a gitignored file, and the manifest in git names it without holding it.
+3. **Every container declares memory requests and limits.** The VM has about 4 GB to spare, and
+   one runaway pod would starve Docker, VS Code and the other projects' dev stacks.
+4. **Images are pinned.** Our own by an explicit version tag, never `:latest` (with kind, `:latest`
+   makes Kubernetes try to pull from a registry instead of using the image loaded into the
+   cluster). Third-party images by tag **and** digest.
+5. **Breaking things on purpose starts with a prediction.** An Experiment issue says what you
+   expect before you do it; the result goes in the issue and the notes, right or wrong.
+6. **Ask before installing tools** on the VM. The issue says what and which version; Sean says go.
 
 ## Working with Sean here
 
-- **Explain each new concept the first time it comes up**, briefly (Pods, Deployments,
-  Services, kubectl, Ingress, CronJobs, Secrets…). This is how he learns it.
+- **Explain each new concept the first time it comes up**, briefly (Pods, Deployments, Services,
+  kubectl, Ingress, CronJobs, Secrets…), in the chat and again in the reference notes. He is
+  starting from zero with Kubernetes, so a term used before it's explained is a bug.
 - When he's stuck, plain numbered steps first.
-- Keep `docs/log.md` as a running log: date, what was tried, what happened, what was learned.
-- Lightweight on purpose: no issue/PR ceremony, no CI gates, no releases (for now). Commit to
-  `main` with clear messages. **Ask before installing tools, pushing, or creating the GitHub repo.**
+- Show the command, then what it printed, then what that means.
 
-## State (2026-11-07)
+## Git & development workflow
 
-- One commit: README and `docs/plan.md`. No GitHub remote yet (public or private is Sean's call).
-- Nothing installed: `kind` and `kubectl` are not on the VM yet.
-- **Next:** Phase 1, step 1: install `kind` and `kubectl` (arm64 builds, pinned versions) on
-  Sean's go, create a cluster, `kubectl get nodes`.
-- Open questions are at the end of `docs/plan.md`.
+Rationale lives in `CONTRIBUTING.md`; this section is the rule.
+
+**Issue → branch → PR → squash-merge.** Do not work directly on `main` (it is protected).
+
+1. **Every change starts from an issue**: Feature (Given/When/Then criteria), Experiment
+   (prediction first) or Bug. Assign the open milestone.
+2. **Branch** off `main` as `<issue#>-short-slug`.
+3. **Check it for real** with the `verify` skill against the running cluster, not by reading YAML.
+4. **Open a PR** with `Closes #<issue>`. Every `Scenario:` gets a `Verified by hand:` line in the
+   PR body until there are tests to claim them.
+5. **Squash-merge on Sean's word.** "Keep going" means do the next thing, not merge.
+
+**Milestones are plan steps** (`docs/plan.md`), one open at a time, closed when the step is done.
+**Batch by coherence, never by calendar.** Commit subjects imperative and capitalised; the body
+says why.
+
+No CI, CHANGELOG or versions yet: they arrive with the first service, in that service's issue.
+
+▶️ `/wrap` runs the end-of-session sequence (`.claude/commands/wrap.md`). `.claude/README.md`
+describes the rest of the harness.
+
+## Current status
+
+See `docs/status.md`. Repo public at `CaddisMaster/k8s-lab` (2026-11-07), workflow and harness
+set up (#1). Nothing installed yet. **Next: #2**, install kind and kubectl (pinned arm64 builds)
+on Sean's go, create the cluster, `kubectl get nodes`.
+
+## Maintainer notes (local only)
+
+Where the notes live, the vault and memory paths and machine-specific state are in the gitignored
+`CLAUDE.local.md`.

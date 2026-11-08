@@ -1,0 +1,49 @@
+name: Feature
+description: "Something new: a service, a manifest, a tool, a piece of the plan"
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Features are specified with **acceptance criteria in Given/When/Then
+        form** before any work starts, so "done" is agreed up front.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is missing today? Describe the need, not the solution. Explain any Kubernetes term the first time it appears.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: >
+        Scenarios in Given/When/Then form, each something you can check in the
+        running cluster. Cover the unhappy paths too.
+      value: |
+        ```gherkin
+        Scenario: status answers inside the cluster
+          Given the status Deployment is running
+          When a pod calls http://status/healthz
+          Then it gets a 200
+
+        Scenario: prober keeps going when status is down
+          Given status has no running pods
+          When prober runs its next check
+          Then prober logs the failure and keeps running
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Explicitly out of scope
+  - type: checkboxes
+    id: considerations
+    attributes:
+      label: Does this touch any of these?
+      options:
+        - label: Installs a tool on the VM (Sean's go first)
+        - label: A Kubernetes Secret (the value never goes in git)
+        - label: Something outside the kind cluster (the VM's files, the network, another repo)

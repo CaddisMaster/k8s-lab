@@ -7,8 +7,10 @@ Background (why microservices, the trade-off, the open questions) is in the clau
 [Explore: containerized microservices](https://claude.ai/artifact/BgaUCbCz8mfaTQvGR9Dxu5).
 
 - **Where:** a kind cluster on the `jupiter` VM. It costs nothing extra and never touches the droplet.
-- **Repo:** separate from Orbit Ops and Budget Buddy. No CI gates or releases at first, just a
-  log of what I tried and what happened (`docs/log.md`).
+- **Repo:** separate from Orbit Ops and Budget Buddy. Issue → branch → PR → squash-merge, with
+  each step below as a milestone (`CONTRIBUTING.md`). Breaking things on purpose is an Experiment
+  issue, prediction first. No CI or releases until the first service. Sessions are recorded in
+  `docs/status.md`, and what I learn goes in my notes.
 - **Code:** each service is a few FastAPI routes. SQLite first, then a Postgres per service once
   the basics work.
 
@@ -20,7 +22,7 @@ Background (why microservices, the trade-off, the open questions) is in the clau
 | `status`   | Works out uptime and incidents, serves a page I can look at                  | incidents     |
 | `notifier` | Messages me when a site goes down, once                                      | alerts sent   |
 
-1. Create the kind cluster and check it with `kubectl get nodes`.
+1. Create the kind cluster and check it with `kubectl get nodes` (#2).
 2. Deploy `prober` and `status`, each as a Deployment with a Service. `prober` calls `status` by
    its Service name.
 3. Break it on purpose. Delete `status`'s pod and see what `prober` does with its results. Scale

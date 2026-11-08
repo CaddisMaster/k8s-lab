@@ -1,0 +1,33 @@
+name: Bug
+description: Something behaves differently from what you expected, found by accident
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Include the exact wording of any error, and the pod's status (CrashLoopBackOff, ImagePullBackOff, Pending…).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. kubectl apply -f k8s/status.yaml
+        2. kubectl get pods
+        3. status-… shows ImagePullBackOff
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Relevant output
+      description: From `kubectl describe pod …` (the Events at the bottom) and `kubectl logs …`. This repository is public, so check for anything sensitive.
+      render: shell

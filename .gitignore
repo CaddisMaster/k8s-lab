@@ -1,0 +1,24 @@
+# Secrets: never commit. A Kubernetes Secret's value comes from the command line or one of these.
+.env
+*.env
+secrets/
+*.secret.yaml
+
+# kubeconfig files hold the cluster's admin credentials. kind writes to ~/.kube/config, but an
+# exported copy (`kind get kubeconfig > …`) must never land in the repo.
+kubeconfig
+*.kubeconfig
+
+# Local-only Claude Code context: vault paths, machine state. CLAUDE.md itself IS tracked.
+CLAUDE.local.md
+
+# The machine half of .claude/ (see .claude/README.md).
+.claude/settings.local.json
+.claude/worktrees/
+
+# Python, once there are services.
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
