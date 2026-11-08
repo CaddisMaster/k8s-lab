@@ -74,9 +74,10 @@ describes the rest of the harness.
 
 ## Current status
 
-See `docs/status.md`. Repo public at `CaddisMaster/k8s-lab` (2026-11-07), workflow and harness
-set up (#1). Nothing installed yet. **Next: #2**, install kind and kubectl (pinned arm64 builds)
-on Sean's go, create the cluster, `kubectl get nodes`.
+See `docs/status.md`. Step 1 is done (2026-11-07): kind v0.33.0, kubectl v1.37.2, the
+`k8s-lab` cluster on Kubernetes v1.37.0 from `kind.yaml` (#2). Step 2's milestone is open with
+#5 `status`, #6 `prober`, #7 CI, criteria written but not yet agreed by Sean. **Next:** his go on
+#5's criteria and on #6's www question, then build #5, then #7, then #6.
 
 ## Maintainer notes (local only)
 
