@@ -6,8 +6,22 @@ starting, and keeping a record good enough to learn from later.
 
 ## 1. Get it running
 
-Nothing to run yet. Phase 1, step 1 (#2) installs `kind` and `kubectl` and creates the cluster;
-this section gets the commands then.
+You need `kind` and `kubectl` (arm64 builds on the VM; versions in `docs/status.md`'s Tools
+table) and Docker.
+
+```bash
+kind create cluster --config kind.yaml        # about 25 s the first time, 10 s once the image is cached
+kubectl config current-context                # kind-k8s-lab
+kubectl wait --for=condition=Ready node/k8s-lab-control-plane --timeout=120s
+kubectl get nodes                             # STATUS Ready
+```
+
+The node says `NotReady` for its first ten seconds or so, while the network plugin starts.
+An empty cluster uses about 540 MiB of the VM's memory (`docker stats --no-stream
+k8s-lab-control-plane`).
+
+To throw it away: `kind delete cluster --name k8s-lab`. That also removes its kubectl context.
+Everything in it is gone, which is fine as long as everything is described in the repo.
 
 ## 2. The workflow
 

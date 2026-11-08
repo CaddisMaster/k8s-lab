@@ -25,8 +25,12 @@ short enough to read at the start of a session.
 
 | Tool | Version | Installed | Checked |
 |---|---|---|---|
-| kind | — | not yet (#2) | — |
-| kubectl | — | not yet (#2) | — |
+| kind | v0.33.0 (go1.26.7, linux/arm64) | 2026-11-07, `~/.local/bin/kind` (#2) | `kind-linux-arm64.sha256sum` from the release: `20022bee…3867a2` OK |
+| kubectl | v1.37.2 (linux/arm64) | 2026-11-07, `~/.local/bin/kubectl` (#2) | `kubectl.sha256` from dl.k8s.io: `fcc16f63…a03509` OK |
+| Cluster | Kubernetes v1.37.0, `kindest/node` pinned by digest in `kind.yaml` | 2026-11-07 (#2) | kind v0.33.0's default node image; kubectl is the same minor |
+
+Upgrading: change kind, the node image in `kind.yaml` (from kind's release notes) and kubectl
+together, keeping kubectl within one minor version of the cluster, then rebuild the cluster.
 
 ## Sessions
 
