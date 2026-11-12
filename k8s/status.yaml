@@ -3,6 +3,7 @@
 #   - a Deployment, which keeps one pod running from the status:0.1.0 image
 #   - a Service, so other pods reach it at http://status/ by name
 #
+#   kubectl config current-context      # must print kind-k8s-lab
 #   kubectl apply -f k8s/status.yaml
 #   kubectl -n k8s-lab rollout status deployment/status
 apiVersion: v1
