@@ -1,0 +1,8 @@
+# The namespace everything of ours lives in. A namespace is a named compartment in the
+# cluster: our objects sit apart from Kubernetes's own (kube-system) and the default one.
+# Check `kubectl config current-context` prints kind-k8s-lab, then apply this first:
+#   kubectl apply -f k8s/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-lab
