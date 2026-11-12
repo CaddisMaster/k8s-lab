@@ -76,10 +76,11 @@ describes the rest of the harness.
 
 ## Current status
 
-See `docs/status.md`. Step 1 is done (2026-11-07): kind v0.33.0, kubectl v1.37.2, the
-`k8s-lab` cluster on Kubernetes v1.37.0 from `kind.yaml` (#2). Step 2's milestone is open with
-#5 `status`, #6 `prober`, #7 CI, criteria written but not yet agreed by Sean. **Next:** his go on
-#5's criteria and on #6's www question, then build #5, then #7, then #6.
+See `docs/status.md`. Step 1 (the cluster, 2026-11-07) and Step 2 (2026-11-11) are done: `status`
+(#5, PR #9), CI (#7, #10) and `prober` (#6, #13) run in the `k8s-lab` namespace of the kind
+cluster, and prober's results reach status's page by the Service name. Step 3's milestone
+("break it on purpose") is open with no issues yet. **Next:** write its Experiment issues,
+prediction first, then run them.
 
 ## Maintainer notes (local only)
 
