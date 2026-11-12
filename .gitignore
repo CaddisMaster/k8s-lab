@@ -22,3 +22,7 @@ __pycache__/
 .venv/
 .pytest_cache/
 .ruff_cache/
+
+# SQLite files from running a service locally.
+*.db
+*.db-*

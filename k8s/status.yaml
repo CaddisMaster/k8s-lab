@@ -1,0 +1,95 @@
+# status: receives check results, works out uptime, serves a page. Three objects:
+#   - a PersistentVolumeClaim, so the SQLite file outlives the pod
+#   - a Deployment, which keeps one pod running from the status:0.1.0 image
+#   - a Service, so other pods reach it at http://status/ by name
+#
+#   kubectl apply -f k8s/status.yaml
+#   kubectl -n k8s-lab rollout status deployment/status
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: status-data
+  namespace: k8s-lab
+  labels:
+    app: status
+spec:
+  accessModes: [ReadWriteOnce]   # one node at a time may mount it read-write
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: status
+  namespace: k8s-lab
+  labels:
+    app: status
+spec:
+  replicas: 1                    # SQLite has one writer, so exactly one pod
+  strategy:
+    type: Recreate               # stop the old pod before starting the new one: the volume is
+                                 # ReadWriteOnce and the database has one writer
+  selector:
+    matchLabels:
+      app: status
+  template:
+    metadata:
+      labels:
+        app: status
+    spec:
+      securityContext:
+        fsGroup: 1000            # the volume is group-writable by the container's user (uid 1000)
+      containers:
+        - name: status
+          image: status:0.1.0    # built on the VM and `kind load`ed; never :latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: SITES
+              value: learn,budget,www
+            - name: STALE_AFTER_SECONDS
+              value: "180"       # no check in 3 min → "no data"
+            - name: LOG_LEVEL
+              value: info
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+          readinessProbe:        # can it take traffic? (also checks the database answers)
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+          livenessProbe:         # is the process itself alive? Restart it if not.
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: status-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: status                   # the hostname: http://status/ inside the namespace
+  namespace: k8s-lab
+  labels:
+    app: status
+spec:
+  selector:
+    app: status
+  ports:
+    - name: http
+      port: 80                   # what callers use
+      targetPort: http           # the container port named "http" above (8000)
