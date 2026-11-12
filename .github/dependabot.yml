@@ -13,6 +13,16 @@ updates:
     schedule:
       interval: weekly
     labels: [dependencies]
+  - package-ecosystem: pip
+    directory: /services/prober
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+  - package-ecosystem: docker
+    directory: /services/prober
+    schedule:
+      interval: weekly
+    labels: [dependencies]
   - package-ecosystem: github-actions
     directory: /
     schedule:

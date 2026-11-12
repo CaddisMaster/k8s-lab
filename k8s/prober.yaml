@@ -1,0 +1,99 @@
+# prober: checks each site every minute, keeps its own record, sends each result to status.
+# Three objects:
+#   - a ConfigMap with its settings (the site list above all), kept outside the image
+#   - a PersistentVolumeClaim, so its SQLite record outlives the pod
+#   - a Deployment, which keeps one pod running from the prober:0.1.0 image
+# No Service: nothing calls prober. To look at it: kubectl -n k8s-lab port-forward deploy/prober 18081:8000
+#
+#   kubectl config current-context      # must print kind-k8s-lab
+#   kubectl apply -f k8s/prober.yaml
+#   kubectl -n k8s-lab rollout status deployment/prober
+#
+# After changing the ConfigMap: kubectl -n k8s-lab rollout restart deployment/prober
+# (env vars are read once, when the container starts).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prober-config
+  namespace: k8s-lab
+  labels:
+    app: prober
+data:
+  # name=url pairs, comma-separated. www has no /healthz, so its home page stands in.
+  SITES: >-
+    learn=https://learn.seandesmet.com/healthz,
+    budget=https://budget.seandesmet.com/healthz,
+    www=https://www.seandesmet.com/
+  STATUS_URL: http://status      # the status Service, by name, through the cluster's DNS
+  INTERVAL_SECONDS: "60"
+  TIMEOUT_SECONDS: "10"          # no 2xx within this is "down"
+  LOG_LEVEL: info
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prober-data
+  namespace: k8s-lab
+  labels:
+    app: prober
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prober
+  namespace: k8s-lab
+  labels:
+    app: prober
+spec:
+  replicas: 1                    # one checker, one SQLite writer
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: prober
+  template:
+    metadata:
+      labels:
+        app: prober
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: prober
+          image: prober:0.1.0    # built on the VM and `kind load`ed; never :latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: prober-config   # every key in the ConfigMap becomes an env var
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+          readinessProbe:        # the database answers
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+          livenessProbe:         # the process answers. Not status, not the sites: their being
+            httpGet:             # down is a result to record, not a reason to restart prober.
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: prober-data

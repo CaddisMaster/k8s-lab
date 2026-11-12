@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [status]   # add each new service here
+        service: [status, prober]   # add each new service here
     defaults:
       run:
         working-directory: services/${{ matrix.service }}
@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [status]   # add each new service here
+        service: [status, prober]   # add each new service here
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: docker build -t ${{ matrix.service }}:ci services/${{ matrix.service }}

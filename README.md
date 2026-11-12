@@ -32,10 +32,10 @@ Each service is built on the VM and loaded straight into kind; there is no regis
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r services/status/requirements-dev.txt
 (cd services/status && ruff check . && ../../.venv/bin/python -m pytest)
-docker build -t status:0.1.0 services/status
+docker build -t status:0.1.0 services/status          # same for prober
 kind load docker-image status:0.1.0 --name k8s-lab
 kubectl config current-context        # must print kind-k8s-lab before anything below
-kubectl apply -f k8s/namespace.yaml && kubectl apply -f k8s/status.yaml
+kubectl apply -f k8s/namespace.yaml && kubectl apply -f k8s/status.yaml -f k8s/prober.yaml
 kubectl -n k8s-lab rollout status deployment/status
 kubectl -n k8s-lab port-forward service/status 18080:80   # then http://localhost:18080/
 ```
