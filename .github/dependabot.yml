@@ -1,0 +1,20 @@
+# Weekly PRs for dependency updates: each service's pinned Python packages and base image,
+# and the Actions used by the workflows (which are pinned by commit SHA).
+# Add a pip and a docker entry for each new service.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /services/status
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+  - package-ecosystem: docker
+    directory: /services/status
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dependencies, ci]
