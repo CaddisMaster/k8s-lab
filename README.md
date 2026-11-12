@@ -18,6 +18,7 @@ as a squash-merged pull request. Each step of the plan is a milestone. See
 ## What's in the repo
 
 ```
+.github/            CI (ruff, pytest, manifest schema check, image builds) and Dependabot
 kind.yaml           the cluster (kind create cluster --config kind.yaml)
 k8s/                manifests: namespace.yaml first, then one file per service
 services/<name>/    each service: app/, tests/, Dockerfile, pinned requirements

@@ -67,7 +67,9 @@ Rationale lives in `CONTRIBUTING.md`; this section is the rule.
 **Batch by coherence, never by calendar.** Commit subjects imperative and capitalised; the body
 says why.
 
-No CI, CHANGELOG or versions yet: they arrive with the first service, in that service's issue.
+**CI** (`.github/workflows/ci.yml`) runs ruff, pytest, a Kubernetes v1.37 schema check of `k8s/`
+and each image build on every PR; wait for green before asking to merge. Dependabot opens weekly
+update PRs. No CHANGELOG or versions: nothing is released.
 
 ▶️ `/wrap` runs the end-of-session sequence (`.claude/commands/wrap.md`). `.claude/README.md`
 describes the rest of the harness.
