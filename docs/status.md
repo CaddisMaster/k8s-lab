@@ -34,6 +34,22 @@ together, keeping kubectl within one minor version of the cluster, then rebuild 
 
 ## Sessions
 
+### 2026-11-07 (later): the cluster exists (#2); Step 2 set up
+
+- **#2 merged (#4):** kind v0.33.0 and kubectl v1.37.2, arm64, SHA-256 checked, in `~/.local/bin`.
+  `kind.yaml` pins `kindest/node:v1.37.0` by digest. First create took 24 s, and a rebuild 9.5 s
+  with the image cached. The node is `NotReady` for its first ~10 s, then `Ready`. An empty
+  cluster settles at **~536 MiB**; the VM keeps ~3.4 GB available with all dev stacks up.
+- **Deleting the cluster removes its kubectl context too.** With no other cluster, `kubectl`
+  then has no context at all.
+- **Pods reach the internet**: a throwaway pod fetched learn's `/healthz`. learn and budget
+  answer `/healthz` with 200; **www has none (404)**, its `/` is 200, so #6 checks www's `/`
+  unless Sean adds a `/healthz` there.
+- **Step 1 milestone closed; Step 2 opened** with #5 (`status`), #6 (`prober`), #7 (CI).
+  Criteria are written, not yet agreed. Proposed order: #5, #7, #6.
+- **Left running:** the `k8s-lab` cluster, unless Sean says otherwise at the wrap.
+- **Next:** Sean agrees #5's criteria (and the www question on #6); then build #5.
+
 ### 2026-11-07: the repo, the workflow and the notes (#1)
 
 - **GitHub:** `CaddisMaster/k8s-lab`, public. Squash-merge only, branches deleted on merge, `main`
@@ -48,4 +64,3 @@ together, keeping kubectl within one minor version of the cluster, then rebuild 
   releases), and a Dependabot config (nothing to update). Each comes when its subject does.
 - **Notes:** the vault has a K8s Lab section with reference notes covering the Kubernetes ideas
   Phase 1 needs, before any of them are used.
-- **Next:** #2. Install kind and kubectl on Sean's go.
