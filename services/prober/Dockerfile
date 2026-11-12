@@ -4,7 +4,7 @@
 #
 # Third-party image pinned by tag AND digest (the multi-arch index digest, so it resolves to the
 # arm64 build on the VM and would to amd64 elsewhere). From: docker buildx imagetools inspect.
-FROM python:3.12.15-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
+FROM python:3.15.0-slim@sha256:f5b92f2a669a4c347044f29367f31983280b648250ca94dea66f98c53bc87e58
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
